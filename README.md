@@ -5,9 +5,9 @@ A minimal Chrome extension that automatically prepends a local timestamp to each
 ## Features
 
 - Automatically detects ChatGPT input textarea using MutationObserver
-- Prepends timestamp in format: `[Day DD Month YYYY, hh:mm a.m./p.m. EST, London, Ontario]`
+- Prepends timestamp in format: `[Day DD Month YYYY, hh:mm a.m./p.m. TIMEZONE]`
+- Automatically uses your local timezone and timezone abbreviation (e.g., EST, PST, GMT, etc.)
 - Only triggers on Enter key press (Shift+Enter for new lines still works)
-- Timezone: America/Toronto (EST)
 - Lightweight and scoped to openai.com/chat domains only
 
 ## Installation
@@ -31,7 +31,9 @@ A minimal Chrome extension that automatically prepends a local timestamp to each
 
 If you type: `Hello, how are you?`
 
-It will be sent as: `[Wednesday 31 December 2025, 7:25 p.m. EST, London, Ontario] Hello, how are you?`
+It will be sent as: `[Wednesday 31 December 2025, 7:25 p.m. EST] Hello, how are you?`
+
+*(The timezone abbreviation will automatically match your location - EST, PST, GMT, etc.)*
 
 ## Notes
 

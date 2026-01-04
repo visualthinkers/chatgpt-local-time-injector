@@ -4,11 +4,34 @@
 (function() {
   'use strict';
 
-  // Format timestamp in the specified format
+  // Get user's timezone abbreviation (EST, PST, etc.)
+  function getTimezoneAbbreviation() {
+    const now = new Date();
+    try {
+      // Use Intl.DateTimeFormat to get timezone abbreviation
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZoneName: 'short'
+      });
+      const parts = formatter.formatToParts(now);
+      const timeZonePart = parts.find(p => p.type === 'timeZoneName');
+      
+      if (timeZonePart && timeZonePart.value) {
+        // Extract abbreviation (e.g., "EST", "PST", "GMT", "PDT")
+        return timeZonePart.value.toUpperCase();
+      }
+    } catch (e) {
+      console.warn('Could not detect timezone abbreviation:', e);
+    }
+    
+    // Fallback: use UTC
+    return 'UTC';
+  }
+
+  // Format timestamp using user's local timezone
   function formatTimestamp() {
     const now = new Date();
+    // Use user's actual timezone (don't specify timeZone to use local)
     const options = {
-      timeZone: 'America/Toronto',
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -33,7 +56,10 @@
     // Format day period (a.m./p.m.)
     const period = dayPeriod === 'AM' ? 'a.m.' : 'p.m.';
     
-    return `[${day} ${dayNum} ${month} ${year}, ${hour}:${minute} ${period} EST, London, Ontario]`;
+    // Get user's timezone abbreviation
+    const timezone = getTimezoneAbbreviation();
+    
+    return `[${day} ${dayNum} ${month} ${year}, ${hour}:${minute} ${period} ${timezone}]`;
   }
 
   // Find the ChatGPT textarea input
@@ -80,8 +106,8 @@
         
         // Only prepend timestamp if message is not empty
         if (currentValue.length > 0) {
-          // Check if timestamp is already prepended
-          const timestampPattern = /^\[[A-Za-z]+ \d+ [A-Za-z]+ \d{4}, \d{1,2}:\d{2} [ap]\.m\. EST, London, Ontario\]/;
+          // Check if timestamp is already prepended (flexible pattern to match any timezone)
+          const timestampPattern = /^\[[A-Za-z]+ \d+ [A-Za-z]+ \d{4}, \d{1,2}:\d{2} [ap]\.m\. [A-Z]+\]/;
           
           if (!timestampPattern.test(currentValue)) {
             const timestamp = formatTimestamp();
